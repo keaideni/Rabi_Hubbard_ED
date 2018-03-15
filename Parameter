@@ -1,0 +1,7 @@
+nmax= 6
+D= 50
+LatticeSize= 20 
+gr= 1
+gcr= 1
+Jr= 0.08
+Jcr= 0
