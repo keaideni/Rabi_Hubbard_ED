@@ -4,7 +4,7 @@
 ##Clang compiler (good to use on Mac OS)
 #CCCOM=clang++ -std=c++1y
 ##Intel C++ compiler (good to use with Intel MKL if available)
-CCCOM=g++ -std=c++11 -g
+CCCOM=g++ -std=c++11 -g 
 #########
 
 
@@ -13,7 +13,7 @@ CCCOM=g++ -std=c++11 -g
 
 
 #LIBFLAGS = -larmadillo
-LIBSPECTRA = -I/home/keaideni/WORK/Spectral/spectra/include/ -I/home/keaideni/WORK/Spectral/eigen-git-mirror/
+LIBSPECTRA = -I/home/keaideni/WORK/Spectral/spectra/include/ -I/home/keaideni/WORK/Spectral/eigen-git-mirror/ -fopenmp
 
 
 

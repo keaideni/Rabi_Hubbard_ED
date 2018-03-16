@@ -19,8 +19,15 @@ public:
         const int& LatticeSize()const{return _LatticeSize;};
         const int& D()const{return _D;};
         const int& nmax()const{return _nmax;};
-
-        void ChangeD(const int& dd){_D=dd;};
+	
+	template<class T>
+        void ChangeJcr(const T& dd){_Jcr=dd;};
+	template<class T>
+        void Changegcr(const T& dd){_gcr=dd;};
+	template<class T>
+        void Changegr(const T& dd){_gr=dd;};
+	template<class T>
+        void ChangeJr(const T& dd){_Jr=dd;};
         //Parameter();
         ~Parameter(){};
         double Energy;

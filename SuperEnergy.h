@@ -13,10 +13,13 @@ using namespace Spectra;
 #define SUPERENERGY_H
 class SuperEnergy
 {
+private:
+	double _energy1, _energy2;
 public:
-
+	const double& energy1(){return _energy1;};
+	const double& energy2(){return _energy2;};
         //SuperEnergy(){};
-        SuperEnergy(Parameter&para,SpMat& sup)
+        SuperEnergy(SpMat& sup)
         {
                 
                 int a(6);
@@ -27,10 +30,12 @@ public:
                 eigs.compute(1000000);
                 if (eigs.info() == SUCCESSFUL)
                 {
-                        para.Energy = eigs.eigenvalues()(0);cout.precision(15);
-			cout<<eigs.eigenvalues()(0)<<endl<<eigs.eigenvalues()(1)<<endl;
-//				<<eigs.eigenvalues()(2)<<endl;
-                        //std::cout << eigs.num_iterations() << std::endl;
+                        //para.Energy = eigs.eigenvalues()(0);cout.precision(15);
+			
+			_energy1=eigs.eigenvalues()(0)<eigs.eigenvalues()(1)?eigs.eigenvalues()(0):eigs.eigenvalues()(1);
+
+			_energy2=eigs.eigenvalues()(0)>eigs.eigenvalues()(1)?eigs.eigenvalues()(0):eigs.eigenvalues()(1);
+                        
                 }
 
                 
