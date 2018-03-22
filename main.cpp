@@ -1,5 +1,6 @@
 //#include "test.h"
 #include "SuperEnergy.h"
+#include "Wave.h"
 #include <omp.h>
 #include <fstream>
 
@@ -17,10 +18,10 @@ int main(int argc, char* argv[])
         
 	
 	vector<Parameter> vecpara;
-	int nworks(10);
-	int num_thread(2);
+	int nworks(1);
+	int num_thread(1);
 
-	omp_set_num_threads(num_thread);
+	//omp_set_num_threads(num_thread);
 	
 	for(int i=0; i<nworks; ++i)
 	{
@@ -29,7 +30,7 @@ int main(int argc, char* argv[])
 		vecpara.push_back(para);
 	}
 	vector<vector<Energy<double>>> a(num_thread);
-	#pragma omp parallel for
+	//#pragma omp parallel for
 	for(int i=0; i<nworks; ++i)
 	{
 		SingleSub a0(vecpara.at(i));
@@ -51,6 +52,44 @@ int main(int argc, char* argv[])
 		Energy<double> tempdata={vecpara.at(i).Jr(),sup.energy1(), sup.energy2()};
 		int j=omp_get_thread_num();
 		a.at(j).push_back(tempdata);
+		
+		string filename1("./wave/ground");
+		string filename2("./wave/excited");
+		filename1+=itos(i);
+		filename2+=itos(i);
+		ofstream outfile1(filename1);
+		ofstream outfile2(filename2);
+
+		outfile1<<vecpara.at(i).gr()<<"\t"<<vecpara.at(i).gcr()<<"\t"<<vecpara.at(i).Jr()<<endl;
+		outfile2<<vecpara.at(i).gr()<<"\t"<<vecpara.at(i).gcr()<<"\t"<<vecpara.at(i).Jr()<<endl;
+		
+		outfile1.precision(15);
+		outfile2.precision(15);
+		vector<amplitude> ground(wave(sup.state1(), 0.000001));
+		vector<amplitude> excited(wave(sup.state2(), 0.000001));
+
+		for(auto it=ground.begin(); it!=ground.end(); ++it)
+		{
+			outfile1<<(*it).amp<<"\t";
+			for(auto itt=(*it).Q.begin(); itt!=(*it).Q.end();++itt)
+			{
+				outfile1<<(*itt)<<"\t";
+			}
+			outfile1<<(*it).N<<endl;
+		}
+		outfile1.close();
+		for(auto it=excited.begin(); it!=excited.end(); ++it)
+		{
+			outfile2<<(*it).amp<<"\t";
+			for(auto itt=(*it).Q.begin(); itt!=(*it).Q.end();++itt)
+			{
+				outfile2<<(*itt)<<"\t";
+			}
+			outfile2<<(*it).N<<endl;
+		}
+		outfile2.close();
+		//int haha=omp_get_thread_num();
+		//cout<<haha<<endl;
 
 	}
 

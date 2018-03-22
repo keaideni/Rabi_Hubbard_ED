@@ -22,7 +22,7 @@ LIBSPECTRA = -I/home/keaideni/WORK/Spectral/spectra/include/ -I/home/keaideni/WO
 obj=main.o SingleSub.o 
 main:$(obj)
 	$(CCCOM) -o main $(obj)  $(LIBSPECTRA)
-main.o:main.cpp SuperEnergy.h 
+main.o:main.cpp SuperEnergy.h Wave.h 
 	$(CCCOM) -c main.cpp -O2 $(LIBSPECTRA)
 SingleSub.o:SingleSub.cpp SingleSub.h Parameter.h
 	$(CCCOM) -c SingleSub.cpp -O2 $(LIBSPECTRA)

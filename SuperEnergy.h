@@ -15,9 +15,13 @@ class SuperEnergy
 {
 private:
 	double _energy1, _energy2;
+
+	VectorXd _state1, _state2;
 public:
-	const double& energy1(){return _energy1;};
-	const double& energy2(){return _energy2;};
+	const double& energy1()const{return _energy1;};
+	const double& energy2()const{return _energy2;};
+	const VectorXd& state1()const{return _state1;};
+	const VectorXd& state2()const{return _state2;};
         //SuperEnergy(){};
         SuperEnergy(SpMat& sup)
         {
@@ -34,8 +38,11 @@ public:
 			
 			_energy1=eigs.eigenvalues()(0)<eigs.eigenvalues()(1)?eigs.eigenvalues()(0):eigs.eigenvalues()(1);
 
+			_state1=eigs.eigenvalues()(0)<eigs.eigenvalues()(1)?eigs.eigenvectors(2).col(0):eigs.eigenvectors(2).col(1);
 			_energy2=eigs.eigenvalues()(0)>eigs.eigenvalues()(1)?eigs.eigenvalues()(0):eigs.eigenvalues()(1);
-                        
+			//vectorXd haha(eigs.eigenvectors(1))
+			_state2=eigs.eigenvalues()(0)>eigs.eigenvalues()(1)?eigs.eigenvectors(2).col(0):eigs.eigenvectors(2).col(1);
+//			cout<<eigs.eigenvectors().cols()<<endl;
                 }
 
                 
