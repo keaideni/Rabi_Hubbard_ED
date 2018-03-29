@@ -1,6 +1,6 @@
 #include "SingleSub.h"
 #include <cmath>
-
+#define PI 3.14159265358979323846
 void SingleSub::Kron(SpMat& ab, const SpMat& a, const SpMat& b)
 {
         ab.setZero();
@@ -28,21 +28,28 @@ _SysA(para.nmax()*2, para.nmax()*2),
 _SysAdag(para.nmax()*2, para.nmax()*2),
 _SysA1(para.nmax()*2, para.nmax()*2),
 _SysAdag1(para.nmax()*2, para.nmax()*2),
-_SysEye(para.nmax()*2, para.nmax()*2)
+_SysEye(para.nmax()*2, para.nmax()*2),
+_ParticleNo(para.nmax()*2, para.nmax()*2),
+_Parity(para.nmax()*2, para.nmax()*2)
 {
         SpMat tempA(para.nmax()+1, para.nmax()+1), 
         tempAdag(para.nmax()+1, para.nmax()+1),
-        tempEye(para.nmax()+1, para.nmax()+1);
+        tempEye(para.nmax()+1, para.nmax()+1),
+	tempParity1(para.nmax()+1, para.nmax()+1);
         for(int i=0; i<para.nmax(); ++i)
         {
                 tempA.insert(i, i+1)=sqrt(i+1);
                 tempAdag.insert(i+1, i)=sqrt(i+1);
                 tempEye.insert(i, i)=1;
+		tempParity1.insert(i, i)=cos(PI*i);
         }//cout<<tempA<<endl;
+	tempParity1.insert(para.nmax(), para.nmax())=cos(PI*(para.nmax()));
         tempEye.insert(para.nmax(), para.nmax())=1;
-        SpMat Sigmamin(2,2), Sigmaplu(2,2), Sigmaeye(2,2);
+        SpMat Sigmamin(2,2), Sigmaplu(2,2), Sigmaeye(2,2), tempParity2(2,2);
         Sigmaeye.insert(0,0)=1; Sigmaeye.insert(1,1)=1;
         Sigmamin.insert(0,1)=1; Sigmaplu.insert(1,0)=1;
+	
+        tempParity2.insert(0,0)=cos(PI*0); tempParity2.insert(1,1)=cos(PI*1);
 
         Kron(_SysA, tempA, Sigmaeye);Kron(_SysAdag, tempAdag, Sigmaeye);
 	Kron(_SysEye, tempEye, Sigmaeye);
@@ -54,12 +61,16 @@ _SysEye(para.nmax()*2, para.nmax()*2)
         //=====================================
 
         SpMat temp;
-        Kron(temp, tempEye, Sigmaplu*Sigmamin); _System+=temp;
+        Kron(temp, tempEye, Sigmaplu*Sigmamin); _System+=temp; _ParticleNo=_System;
         Kron(temp, tempAdag, Sigmamin); temp*=para.gr(); _System+=temp;
         Kron(temp, tempA, Sigmaplu); temp*=para.gr(); _System+=temp;
 
         Kron(temp, tempAdag, Sigmaplu); temp*=para.gcr(); _System+=temp;
         Kron(temp, tempA, Sigmamin); temp*=para.gcr(); _System+=temp;
+
+	Kron(_Parity, tempParity1, tempParity2);
+	MatrixXd haha(_Parity);
+	//cout<<haha<<endl;
 
 }
 
@@ -78,6 +89,9 @@ SingleSub::SingleSub(const Parameter& para, const SingleSub& SubL, const SingleS
         Kron(_SysAdag1, SubL.SysAdag1(), SubR.SysEye());
 
         Kron(_SysEye, SubL.SysEye(), SubR.SysEye());
+
+	Kron(_ParticleNo, SubL._ParticleNo, SubR._SysEye);
+	Kron(_Parity, SubL._Parity, SubR._Parity);
 }
 
 

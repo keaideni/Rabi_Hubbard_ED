@@ -4,7 +4,7 @@
 ##Clang compiler (good to use on Mac OS)
 #CCCOM=clang++ -std=c++1y
 ##Intel C++ compiler (good to use with Intel MKL if available)
-CCCOM=g++ -std=c++11 -g 
+CCCOM=mpic++ -std=c++11 -g 
 #########
 
 

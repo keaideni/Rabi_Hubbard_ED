@@ -2,6 +2,7 @@
 #ifndef SINGLE_SUB_H
 #define SINGLE_SUB_H
 #include "Parameter.h"
+#include <Eigen/Dense>
 #include <Eigen/Sparse>
 using namespace std;
 using namespace Eigen;
@@ -18,6 +19,8 @@ class SingleSub
         SpMat _SysA1;
         SpMat _SysAdag1;
 	SpMat _SysEye;
+	SpMat _ParticleNo;
+	SpMat _Parity;
         void Kron(SpMat& ab, const SpMat& a, const SpMat& b);
 
  public:
@@ -27,6 +30,8 @@ class SingleSub
         const SpMat& SysA1()const{return _SysA1;};
         const SpMat& SysAdag1()const{return _SysAdag1;};
 	const SpMat& SysEye()const{return _SysEye;};
+	const SpMat& ParticleNo()const{return _ParticleNo;};
+	const SpMat& Parity()const{return _Parity;};
          SingleSub(){};
          ~SingleSub(){};
          SingleSub(const Parameter& para);
