@@ -37,6 +37,7 @@ int main(int argc, char* argv[])
 
 	MPI_Comm_rank(MPI_COMM_WORLD, &myid);
 	MPI_Comm_size(MPI_COMM_WORLD, &numprocess);
+	//myid=0;numprocess=1;
 
 	int everygroup(groupn/numprocess);
 

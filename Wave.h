@@ -39,27 +39,27 @@ struct Energy{
 	T SecondOrder;
 };//save all the properties calculated. And should be change if there is more properties to calculate.
 
-vector<amplitude> wave(const VectorXd& wave, const double& err);
-vector<amplitude> wave(const VectorXd& wave, const double& err)
+vector<amplitude> wave(const VectorXd& wave, const double& err, const int& nmax);
+vector<amplitude> wave(const VectorXd& wave, const double& err, const int& nmax)
 {
 	vector<amplitude> tempwave;
 	int it(0);
-	for(int a1=0; a1<=6;++a1)
+	for(int a1=0; a1<=nmax;++a1)
 	{
 		for(int q1=0;q1<=1;++q1)
 		{
 			
-			for(int a2=0; a2<=6;++a2)
+			for(int a2=0; a2<=nmax;++a2)
 			{
 				for(int q2=0;q2<=1;++q2)
 				{
 
-	for(int a3=0; a3<=6;++a3)
+	for(int a3=0; a3<=nmax;++a3)
 	{
 		for(int q3=0;q3<=1;++q3)
 		{
 
-	for(int a4=0; a4<=6;++a4)
+	for(int a4=0; a4<=nmax;++a4)
 	{
 		for(int q4=0; q4<=1; ++q4)
 		{
@@ -132,13 +132,13 @@ Energy<double> calcuwave(const vector<Parameter>& vecpara, const int& myid, cons
 	ofstream outfile1(filename1);
 	ofstream outfile2(filename2);
 
-	outfile1<<vecpara.at(myid*everygroup+i).gr()<<"\t"<<vecpara.at(i).gcr()<<"\t"<<vecpara.at(i).Jr()<<"\t";
-	outfile2<<vecpara.at(myid*everygroup+i).gr()<<"\t"<<vecpara.at(i).gcr()<<"\t"<<vecpara.at(i).Jr()<<"\t";
+	outfile1<<vecpara.at(myid*everygroup+i).gr()<<"\t"<<vecpara.at(myid*everygroup+i).gcr()<<"\t"<<vecpara.at(myid*everygroup+i).Jr()<<"\t";
+	outfile2<<vecpara.at(myid*everygroup+i).gr()<<"\t"<<vecpara.at(myid*everygroup+i).gcr()<<"\t"<<vecpara.at(myid*everygroup+i).Jr()<<"\t";
 		
 	outfile1.precision(15);
 	outfile2.precision(15);
-	vector<amplitude> ground(wave(sup.state1(), 0.0001));
-	vector<amplitude> excited(wave(sup.state2(), 0.0001));
+	vector<amplitude> ground(wave(sup.state1(), 0.0001, vecpara.at(myid*everygroup+i).nmax()));
+	vector<amplitude> excited(wave(sup.state2(), 0.0001, vecpara.at(myid*everygroup+i).nmax()));
 
 	outfile1<<ground.size()<<endl;
 	outfile2<<excited.size()<<endl;
