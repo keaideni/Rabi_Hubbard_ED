@@ -19,9 +19,9 @@ int main(int argc, char* argv[])
 	//omp_set_num_threads(num_thread);
 	
 	int myid, numprocess;
-	int groupn(2);
+	int groupn(10);
 
-	int nproper(9);//to be change as the number of properties change.
+	int nproper(11);//to be change as the number of properties change.
 	for(int i=0; i<groupn; ++i)
 	{
 		Parameter para;
@@ -64,13 +64,13 @@ int main(int argc, char* argv[])
 		ofstream outfile("result");
 		outfile.precision(15);
 
-		outfile<<"coupling"<<"\t"<<"ground"<<"\t"<<"excited"<<"\t"<<"orderparameter"<<"\t"<<"ParticleNo"<<"\t"<<"AParticleNo"<<"\t"<<"Parity"<<"\t"<<"Asqure"<<"\t"<<"SecondOrder"<<endl;
+		outfile<<"coupling"<<"\t"<<"ground"<<"\t"<<"excited"<<"\t"<<"orderparameter"<<"\t"<<"ParticleNo"<<"\t"<<"AParticleNo"<<"\t"<<"Parity"<<"\t"<<"Asqure"<<"\t"<<"SecondOrder"<<"\t"<<"Correlation1"<<"\t"<<"Correlation2"<<endl;
 
 		for(auto it=a.begin(); it!=a.end();++it)
 		{
 			for(auto itt=it->begin(); itt!=it->end(); ++itt)
 			{
-				outfile<<(*itt).coupling<<"\t"<<(*itt).energy1<<"\t"<<(*itt).energy2<<"\t"<<(*itt).orderparameter<<"\t"<<(*itt).ParticleNo<<"\t"<<(*itt).AParticleNo<<"\t"<<(*itt).Parity<<"\t"<<(*itt).Asqure<<"\t"<<(*itt).SecondOrder<<endl;
+				outfile<<(*itt).coupling<<"\t"<<(*itt).energy1<<"\t"<<(*itt).energy2<<"\t"<<(*itt).orderparameter<<"\t"<<(*itt).ParticleNo<<"\t"<<(*itt).AParticleNo<<"\t"<<(*itt).Parity<<"\t"<<(*itt).Asqure<<"\t"<<(*itt).SecondOrder<<"\t"<<(*itt).Correlation1<<"\t"<<(*itt).Correlation2<<endl;
 			}//this should be changed if add new properties.
 		}
 

@@ -14,7 +14,8 @@
 #include"SuperEnergy.h"
 using namespace std;
 
-typedef Matrix<double, Dynamic, 9> MatrixXRd;//the second number should be changed by the properties calculated.
+void Kron(SpMat& ab, const SpMat& a, const SpMat& b);
+typedef Matrix<double, Dynamic, 11> MatrixXRd;//the second number should be changed by the properties calculated.
 struct amplitude
 {
 	double amp;
@@ -37,6 +38,8 @@ struct Energy{
 	T Parity;
 	T Asqure;
 	T SecondOrder;
+	T Correlation1;
+	T Correlation2;
 };//save all the properties calculated. And should be change if there is more properties to calculate.
 
 vector<amplitude> wave(const VectorXd& wave, const double& err, const int& nmax);
@@ -115,6 +118,11 @@ Energy<double> calcuwave(const vector<Parameter>& vecpara, const int& myid, cons
 
 	SuperEnergy sup(System);
 
+	SpMat CorrelationMat1, CorrelationMat2;
+	Kron(temp, a0.SysAdag(), a0.SysA());
+	Kron(CorrelationMat1, temp, a1.SysEye());
+	Kron(CorrelationMat2, a1.SysAdag(), a1.SysA());
+
 	double orderpara(abs(sup.state1().transpose()*a2.SysA()*sup.state1()));
 	//cout<<"haha"<<endl;
 	double ParticleNo(sup.state1().transpose()*(a2.ParticleNo()*sup.state1()));
@@ -123,7 +131,9 @@ Energy<double> calcuwave(const vector<Parameter>& vecpara, const int& myid, cons
 	double Asqure(sup.state1().transpose()*a2.SysA()*a2.SysA()*sup.state1());
 	double SecondOrder((sup.state1().transpose()*a2.SysAdag()*a2.SysAdag()*a2.SysA()*a2.SysA()*sup.state1()));
 	
-	Energy<double> tempdata={vecpara.at(myid*everygroup+i).Jr(),sup.energy1(), sup.energy2(), orderpara, ParticleNo, AParticleNo, Parity, Asqure, SecondOrder/pow(AParticleNo, 2)};//this should be changed if there is something more to calculate.
+	double Correlation1(sup.state1().transpose()*CorrelationMat1*sup.state1());
+	double Correlation2(sup.state1().transpose()*CorrelationMat2*sup.state1());
+	Energy<double> tempdata={vecpara.at(myid*everygroup+i).Jr(),sup.energy1(), sup.energy2(), orderpara, ParticleNo, AParticleNo, Parity, Asqure, SecondOrder/pow(AParticleNo, 2), Correlation1, Correlation2};//this should be changed if there is something more to calculate.
 		
 	string filename1("./wave/ground");
 	string filename2("./wave/excited");
@@ -170,12 +180,12 @@ MatrixXRd vec2mat(const vector<Energy<double>>& vec);
 MatrixXRd vec2mat(const vector<Energy<double>>& vec)
 {
 
-	MatrixXRd a(MatrixXd::Zero(vec.size(), 9));//cout<<vec.size()<<endl;
+	MatrixXRd a(MatrixXd::Zero(vec.size(), 11));//cout<<vec.size()<<endl;
 	int nrow(0);
 	for(auto it=vec.begin(); it!=vec.end(); ++it)
 	{
-		VectorXd temp(9);
-		temp<<it->coupling, it->energy1, it->energy2, it->orderparameter, it->ParticleNo, it->AParticleNo, it->Parity, it->Asqure, it->SecondOrder;//here should be changed if the properties calculated added.
+		VectorXd temp(11);
+		temp<<it->coupling, it->energy1, it->energy2, it->orderparameter, it->ParticleNo, it->AParticleNo, it->Parity, it->Asqure, it->SecondOrder, it->Correlation1, it->Correlation2;//here should be changed if the properties calculated added.
 		//cout<<temp<<endl;
 		a.row(nrow++)=temp.transpose();
 	}
@@ -189,8 +199,31 @@ vector<Energy<double>> mat2vec(const MatrixXRd& a)
 	vector<Energy<double>> temp;
 	for(int i=0; i<a.rows(); ++i)
 	{
-		temp.push_back({a(i, 0), a(i, 1), a(i, 2), a(i, 3), a(i, 4), a(i, 5), a(i, 6), a(i, 7), a(i, 8)});
+		temp.push_back({a(i, 0), a(i, 1), a(i, 2), a(i, 3), a(i, 4), a(i, 5), a(i, 6), a(i, 7), a(i, 8), a(i, 9), a(i, 10)});
 	}
 
 	return temp;
+}
+
+
+
+void Kron(SpMat& ab, const SpMat& a, const SpMat& b)
+{
+        ab.setZero();
+        ab.resize(a.rows()*b.rows(), a.cols()*b.cols());
+
+        for (int k=0; k<a.outerSize(); ++k)
+                for(SpMat::InnerIterator it(a,k); it; ++it)
+                {
+                        for(int l=0; l<b.outerSize(); ++l)
+                        {
+                                for(SpMat::InnerIterator itt(b,l); itt; ++itt)
+                                {
+                                        ab.insert(it.row()*b.rows()+itt.row(), 
+                                                it.col()*b.cols()+itt.col())
+                                        =it.value()*itt.value();
+                                }
+                        }
+                }
+
 }
